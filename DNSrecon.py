@@ -1,7 +1,7 @@
 #!python3 
 #Written by NMM
 
-import json, requests, sys
+import json, requests, sys, csv
 
 # Compute DomainName from command line arguments.
 if len(sys.argv) < 2:
@@ -20,8 +20,13 @@ response.raise_for_status()
 DnsData = json.loads(response.text)
 FDNS_Data = DnsData['FDNS_A']
 
+SaveAsCsv = open('Results.csv','w')
+resultWriter = csv.writer(SaveAsCsv, lineterminator='\n')
+
+resultWriter.writerow(['Domain_Name','IP_Address'])
+
 if FDNS_Data is None:
-		print("No Results Found.. Please Tweak and Try Again.. '\n")
+		print("No Results Found.. Please Tweak and Try Again.. \n")
 
 else:
 	for FDNS_Row in FDNS_Data:
@@ -32,4 +37,6 @@ else:
 		for IP_addr, Name in FDNS_Dictionary.items():
 			#print (f"The domain name \"{Name}\" has the IP address of \"{IP_addr}\"")
 			print(f"{Name} => {IP_addr}")
-	print('\n')
+			resultWriter.writerow((Name,IP_addr))
+
+SaveAsCsv.close()
